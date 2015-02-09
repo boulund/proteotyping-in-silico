@@ -1,0 +1,14 @@
+# Fredrik Boulund 2015
+# Digest peptides
+
+
+trypsin digest:
+    help: Digest genomes with EMBOSS digest
+    # no deps
+    formula: >
+        mkdir digest;
+        for proteome in `ls proteomes`; 
+        do digest -menu 1 -mono N -outfile "digest/$proteome.digest" -rformat2 srs "proteomes/$proteome"; 
+        done
+    output:
+        - digest
