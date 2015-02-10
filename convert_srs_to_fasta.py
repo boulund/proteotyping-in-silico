@@ -13,11 +13,13 @@ with open(argv[1]) as srs:
     tw = TextWrapper()
     for line in srs:
         if line.startswith("# Sequence:"):
-            _, _, header, _, _, _, _ = line.split()
+            header = line.split()[2]
         elif line.startswith("Feature:"):
-            _, feature = line.split()
-            print ">{h}{f}".format(h=header, f=feature)
+            feature = line.split()[1]
+        elif line.startswith("Length:"):
+            seqlen = line.split()[1]
+            print ">{h}{f}_{length}".format(h=header, f=feature, length=seqlen)
         elif line.startswith("Sequence:"):
-            _, seq = line.split()
+            seq = line.split()[1]
             for seqline in tw.wrap(seq):
                 print seqline
