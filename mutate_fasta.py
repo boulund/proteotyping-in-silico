@@ -61,7 +61,7 @@ def sample_fasta(fastafile, outfile, matrix, options):
                 header, seq = pychoice(seqs)
                 if options.p > 0.0:
                     seq, mutations = mutate_seq(seq, options.p, matrix)
-                    f.write(">"+header+" mutations=", str(mutations), "\n")
+                    f.write(">"+header+" mutations="+ str(mutations), "\n")
                 else:
                     f.write(">"+header+"\n")
                 f.write(seq+"\n")
