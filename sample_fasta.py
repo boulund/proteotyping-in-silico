@@ -24,7 +24,7 @@ def parse_args(argv):
     parser.add_argument("--minlength", metavar="m", type=int,
             default=0,
             help="Minimum length of sequences to sample from, 0 means no limit [%(default)s].")
-    parser.add_argument("-o", "--outfile", metavar="FILE",
+    parser.add_argument("-o", "--outfile", metavar="FILE", dest="outfile",
             default="",
             help="Write output to FILE instead of STDOUT.")
 
@@ -48,10 +48,17 @@ def sample_fasta(fastafile, outfile, options):
         if seqlen >= options.minlength and seqlen <= options.maxlength:
             seqs.append((header,seq))
 
-    for n in xrange(0,options.n):
-        header, seq = choice(seqs)
-        print ">"+header
-        print seq
+    if options.outfile:
+        with open(outfile, 'w') as f:
+            for n in xrange(0,options.n):
+                header, seq = choice(seqs)
+                f.write(">"+header+"\n")
+                f.write(seq+"\n")
+    else:
+        for n in xrange(0,options.n):
+            header, seq = choice(seqs)
+            print ">"+header
+            print seq
 
 
 if __name__ == "__main__":
