@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # Fredrik Boulund 2015
 # Compute the number of BLAT hits for each fragment in the source file
 
