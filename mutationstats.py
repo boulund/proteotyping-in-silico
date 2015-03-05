@@ -12,11 +12,16 @@ from sys import argv, exit
 
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 from pandas import DataFrame, Panel
 import cPickle
 
+pp = PdfPages("plots.pdf")
 pd.options.display.mpl_style="default"
+pd.set_option("display.max_rows", 500)
+pd.set_option("display.max_columns", 500)
+pd.set_option("display.width", 1000)
 
 if len(argv) < 2:
     print "usage: script.py file.results [...]"
@@ -33,8 +38,10 @@ def extract(filename):
     return taxname, mutrate
 
 d = {}
+mutrates = set()
 for filename in argv[1:]:
     taxname, mutrate = extract(filename)
+    mutrates.add(mutrate)
     if not d.has_key(taxname):
         d[taxname] = {}
     with open(filename) as f:
@@ -64,27 +71,30 @@ dfs = {}
 for taxname in d.keys():
     dfs[taxname] = DataFrame(d[taxname], 
         columns=d[taxname].keys(), 
-        index=[0.0, 0.01, 0.02, 0.03, 0.05, 0.10])
+        index=list(mutrates))
 wp = Panel(dfs)
-wp.to_pickle("panel.pkl")
 
 with open("dict.pkl", 'wb') as f:
     cPickle.dump(d, f)
 
-plot_spec = wp.minor_xs("Sensitivity").transpose().plot(kind="bar")
+ax_spec = wp.minor_xs("Sensitivity").transpose().plot(kind="bar")
 plt.legend(loc=3)
 plt.title("Sensitivity")
-plt.xlabel("Mutation rate")
+plt.xlabel("Species")
 plt.ylabel("Sensitivity")
 plt.ylim((80, 100))
-plt.gcf().subplots_adjust(bottom=.25)
+#plt.gcf().subplots_adjust(bottom=.25)
+plt.setp(ax_spec.get_xticklabels(), rotation="horizontal", fontsize=20)
+pp.savefig()
 
-fnr = wp.minor_xs("FNR")
-fnr.plot(kind="bar")
+ax_fnr = wp.minor_xs("FNR").transpose().plot(kind="bar")
 plt.legend(loc=0)
 plt.title("False Negative Rate")
-plt.xlabel("Mutation rate")
+plt.xlabel("Species")
 plt.ylabel("FNR")
+plt.setp(ax_fnr.get_xticklabels(), rotation="horizontal", fontsize=20)
+pp.savefig()
+pp.close()
 
 print "Total"
 print wp.minor_xs("Total")
